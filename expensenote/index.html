@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Note | Razoo Studio</title>
+    <meta name="description"
+        content="Expense Note — a beautiful, offline-first expense tracker with rich analytics, category management, and export features. By Razoo Studio.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0A0A0B;
+            --card-bg: #141417;
+            --accent: #E53935;
+            --accent-glow: rgba(229, 57, 53, 0.2);
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0AA;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --border-accent: rgba(229, 57, 53, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Ambient red glow */
+        .ambient-glow {
+            position: fixed;
+            top: -15%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(229, 57, 53, 0.06) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -10%;
+            left: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(229, 57, 53, 0.04) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 40px 40px 0;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* Hero section */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: #1A0505;
+            border: 1px solid var(--border-accent);
+            border-radius: 26px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 30px rgba(229,57,53,0.15);
+            overflow: hidden;
+        }
+        .app-icon svg { width: 100%; height: 100%; }
+
+        .badge {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            margin-bottom: 14px;
+            opacity: 0.9;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to bottom, #fff 30%, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.15;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 520px;
+        }
+
+        /* Store buttons */
+        .store-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .store-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 22px;
+            border-radius: 14px;
+            border: 1px solid var(--border-accent);
+            background: rgba(229,57,53,0.06);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.25s, border-color 0.25s, transform 0.2s;
+        }
+        .store-btn:hover {
+            background: rgba(229,57,53,0.12);
+            border-color: rgba(229,57,53,0.5);
+            transform: translateY(-2px);
+        }
+        .store-btn svg { width: 20px; height: 20px; opacity: 0.8; }
+
+        /* Feature chips */
+        .feature-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 56px;
+        }
+        .chip {
+            padding: 7px 16px;
+            background: #1C1014;
+            border: 1px solid var(--border-accent);
+            border-radius: 99px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* Sections */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .section-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 12%; height: 76%;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            opacity: 0.35;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h2 .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            flex-shrink: 0;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+        p:last-child { margin-bottom: 0; }
+
+        ul {
+            list-style: none;
+            margin-bottom: 18px;
+        }
+        li {
+            color: var(--text-secondary);
+            padding-left: 22px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+            opacity: 0.7;
+        }
+
+        strong { color: var(--text-primary); font-weight: 600; }
+
+        .contact-link {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .contact-link:hover { text-decoration: underline; }
+
+        /* Privacy highlight box */
+        .highlight-box {
+            background: rgba(229, 57, 53, 0.06);
+            border: 1px solid rgba(229, 57, 53, 0.2);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+        }
+        .highlight-box p { color: var(--text-primary); margin: 0; font-size: 0.95rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .section-card { padding: 28px 22px; }
+            .back-link { padding: 24px 20px 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <a href="../" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Razoo Studio
+    </a>
+
+    <div class="container">
+        <!-- Hero -->
+        <header>
+            <div class="app-icon">
+                <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="512" height="512" fill="#1A0505"/>
+                    <circle cx="256" cy="256" r="200" fill="rgba(220,50,50,0.08)"/>
+                    <rect x="140" y="100" width="232" height="290" rx="20" ry="20" fill="#2A0808"/>
+                    <rect x="140" y="100" width="232" height="290" rx="20" ry="20" stroke="#E53935" stroke-width="4" stroke-opacity="0.5"/>
+                    <path d="M140 370 L156 390 L172 370 L188 390 L204 370 L220 390 L236 370 L252 390 L268 370 L284 390 L300 370 L316 390 L332 370 L348 390 L364 370 L372 390 L372 370 Z" fill="#1A0505" stroke="#E53935" stroke-width="2" stroke-opacity="0.4"/>
+                    <rect x="175" y="155" width="100" height="10" rx="5" fill="#E53935" fill-opacity="0.9"/>
+                    <rect x="175" y="185" width="162" height="8" rx="4" fill="#E53935" fill-opacity="0.35"/>
+                    <rect x="175" y="210" width="130" height="8" rx="4" fill="#E53935" fill-opacity="0.25"/>
+                    <rect x="175" y="235" width="150" height="8" rx="4" fill="#E53935" fill-opacity="0.25"/>
+                    <rect x="175" y="290" width="20" height="45" rx="5" fill="#E53935" fill-opacity="0.5"/>
+                    <rect x="205" y="270" width="20" height="65" rx="5" fill="#E53935" fill-opacity="0.7"/>
+                    <rect x="235" y="255" width="20" height="80" rx="5" fill="#E53935"/>
+                    <rect x="265" y="275" width="20" height="60" rx="5" fill="#E53935" fill-opacity="0.6"/>
+                    <rect x="295" y="285" width="20" height="50" rx="5" fill="#E53935" fill-opacity="0.4"/>
+                    <circle cx="256" cy="256" r="220" stroke="#E53935" stroke-width="1.5" stroke-opacity="0.08"/>
+                </svg>
+            </div>
+
+            <span class="badge">Razoo Studio</span>
+            <h1>Expense Note</h1>
+            <p class="tagline">A beautiful, offline-first expense tracker. Visualize your spending with rich analytics, manage custom categories, and export reports — all in one place.</p>
+
+            <div class="store-row">
+                <a href="https://github.com/rajujahidulhassan/expense_note" class="store-btn" target="_blank" rel="noopener">
+                    <!-- GitHub icon -->
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+        </header>
+
+        <!-- Feature chips -->
+        <div class="feature-chips">
+            <div class="chip"><span class="chip-dot"></span>100% Offline</div>
+            <div class="chip"><span class="chip-dot"></span>Sunburst Analytics</div>
+            <div class="chip"><span class="chip-dot"></span>Custom Categories</div>
+            <div class="chip"><span class="chip-dot"></span>PDF &amp; CSV Export</div>
+            <div class="chip"><span class="chip-dot"></span>Smart Notifications</div>
+            <div class="chip"><span class="chip-dot"></span>Multi-Currency</div>
+            <div class="chip"><span class="chip-dot"></span>Income &amp; Expense</div>
+            <div class="chip"><span class="chip-dot"></span>30-Day Mini Chart</div>
+        </div>
+
+        <!-- About -->
+        <div class="section-card">
+            <h2><span class="dot"></span>About the App</h2>
+            <p>
+                <strong>Expense Note</strong> is a minimalist, privacy-first expense tracking app built with Flutter. It runs
+                entirely on your device — no account, no cloud sync, no data ever leaves your phone.
+            </p>
+            <p>
+                Record daily expenses and income, assign them to custom categories, and watch your spending patterns come
+                alive through a radial sunburst chart, monthly lollipop chart, and a 30-day mini bar chart right on the home screen.
+            </p>
+            <p>
+                When you're ready, export your data as a clean <strong>PDF report</strong> or a <strong>CSV spreadsheet</strong>
+                for any date range you choose.
+            </p>
+        </div>
+
+        <!-- Key Features -->
+        <div class="section-card">
+            <h2><span class="dot"></span>Key Features</h2>
+            <ul>
+                <li><strong>Home Dashboard</strong> — Scrollable hero card with live monthly total and a 30-day spending bar chart</li>
+                <li><strong>Sunburst Pie Chart</strong> — Tap any category segment to expand it and see the amount in the center</li>
+                <li><strong>Monthly Analytics</strong> — Lollipop chart showing 12 months of history at a glance</li>
+                <li><strong>Custom Categories</strong> — Create, rename, and reorder your own spending categories</li>
+                <li><strong>Income Tracking</strong> — Log income entries alongside expenses, with clear +/− display</li>
+                <li><strong>Multi-Currency</strong> — Choose from dozens of global currencies with correct symbols</li>
+                <li><strong>PDF &amp; CSV Export</strong> — Generate reports for current month, last month, or any custom date range</li>
+                <li><strong>Smart Notifications</strong> — Daily digest, weekly insights, and monthly summaries</li>
+                <li><strong>No Internet Required</strong> — Fully offline, data stored locally on device using Hive</li>
+            </ul>
+        </div>
+
+        <!-- Privacy Policy -->
+        <div class="section-card">
+            <h2><span class="dot"></span>Privacy Policy</h2>
+            <p style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px;">
+                Last updated: May 2026
+            </p>
+
+            <div class="highlight-box">
+                <p>🔒 <strong>Expense Note collects zero personal data.</strong> Everything stays on your device. We never see your expenses, income, or any other information.</p>
+            </div>
+
+            <h2 style="font-size: 1.1rem; margin-top: 8px;"><span class="dot"></span>Data We Collect</h2>
+            <p><strong>Nothing.</strong> The app stores all your data locally on your device using an embedded database (Hive). No data is transmitted to any server, third party, or cloud service.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Local Storage</h2>
+            <p>All expense and income records, custom categories, settings (currency, name, notification preferences), and profile image are stored <strong>only on your device</strong>. Uninstalling the app permanently deletes all this data.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Notifications</h2>
+            <p>If you enable notifications, the app schedules local push notifications (daily digest, weekly insights, monthly summary) <strong>entirely on-device</strong>. No notification data is sent externally.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Permissions</h2>
+            <ul>
+                <li><strong>Notifications</strong> — To deliver local spending reminders (optional)</li>
+                <li><strong>Storage / Files</strong> — To save exported PDF and CSV reports to your Downloads folder</li>
+                <li><strong>Camera / Gallery</strong> — Only if you choose to set a profile photo (optional)</li>
+            </ul>
+            <p>No permissions are used for tracking, analytics, or advertising purposes.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Third-Party Services</h2>
+            <p>Expense Note uses <strong>no third-party analytics, advertising SDKs, or tracking libraries</strong>. The only external dependency is Google Fonts, loaded at build time — no font requests are made at runtime.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Children's Privacy</h2>
+            <p>This app does not knowingly collect any information from anyone, including children under 13.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Changes to This Policy</h2>
+            <p>If we update this privacy policy, the new version will be posted here. Continued use of the app means you accept any updated terms.</p>
+
+            <h2 style="font-size: 1.1rem;"><span class="dot"></span>Contact</h2>
+            <p>
+                Questions? Reach us at
+                <a class="contact-link" href="mailto:rajujahidulhassan@gmail.com">rajujahidulhassan@gmail.com</a>
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <a href="../">Razoo Studio</a>. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
